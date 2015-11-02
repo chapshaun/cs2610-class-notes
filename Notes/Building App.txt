@@ -1,0 +1,9 @@
+Recitation: WED: Old Main 406 @ 4:00 - 6:00 pm
+
+sudo npm install express
+sudo npm install express-handlebars
+sudo npm install request
+sudo npm install body-parser
+sudo npm init
+
+sudo npm install <package> --save

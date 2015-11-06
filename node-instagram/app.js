@@ -3,21 +3,25 @@ var exphbs = require('express-handlebars')
 var bodyParser = require('body-parser')
 var request = require('request')
 var querystring = require('querystring')
+var session = require('express-session')
+var cfg = require('./config')
 
 var app = express()
-var ACCESS_TOKEN = ''
-var CLIENT_ID = '1c1c18cbde554eaba91bee06ff3b5921'
-var CLIENT_SECRET = 'bb6731b3f7784bbfb5027418e17b2a1e'
-var REDIRECT_URI = 'http://localhost:3000/auth/finalize'
-
 
 app.engine('handlebars', exphbs({defaultLayout: 'base'}))
 app.set('view engine', 'handlebars')
 
+app.use(session({
+  cookieName: 'session',
+  secret: 'a;slkdjf;alsdkjf',
+  resave: false,
+  saveUninitialized: true
+}))
+
 app.get('/authorize', function(req, res) {
   var qs = {
-    client_id: CLIENT_ID,
-    redirect_uri: REDIRECT_URI,
+    client_id: cfg.client_id,
+    redirect_uri: cfg.redirect_uri,
     response_type: 'code'
   }
 
@@ -31,9 +35,9 @@ app.get('/authorize', function(req, res) {
 
 app.get('/auth/finalize', function(req, res) {
 var post_data = {
-  client_id: CLIENT_ID,
-  client_secret: CLIENT_SECRET,
-  redirect_uri: REDIRECT_URI,
+  client_id: cfg.client_id,
+  client_secret: cfg.client_secret,
+  redirect_uri: cfg.redirect_uri,
   grant_type: 'authorization_code',
   code: req.query.code
 }
@@ -46,7 +50,7 @@ var post_data = {
   request.post(options, function(error, response, body) {
     var data = JSON.parse(body)
     // console.log(data)
-    ACCESS_TOKEN = data.access_token
+    req.session.access_token = data.access_token
     res.redirect('/feed')
     // res.send('It Worked')
   })
@@ -59,7 +63,7 @@ var post_data = {
 
 app.get('/feed', function(req, res) {
   var options = {
-    url: 'https://api.instagram.com/v1/users/self/feed/?access_token=' + ACCESS_TOKEN
+    url: 'https://api.instagram.com/v1/users/self/feed/?access_token=' + req.session.access_token
   }
 
   request.get(options, function(error, response, body) {

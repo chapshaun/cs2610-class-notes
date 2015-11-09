@@ -18,6 +18,10 @@ app.use(session({
   saveUninitialized: true
 }))
 
+app.get('/', function(req, res) {
+  res.render('index')
+})
+
 app.get('/authorize', function(req, res) {
   var qs = {
     client_id: cfg.client_id,
@@ -34,6 +38,9 @@ app.get('/authorize', function(req, res) {
 })
 
 app.get('/auth/finalize', function(req, res) {
+  if (req.query.error == 'access_denied') {
+    return res.redirect('/')
+  }
 var post_data = {
   client_id: cfg.client_id,
   client_secret: cfg.client_secret,
@@ -61,19 +68,40 @@ var post_data = {
 
 // app.use(bodyParser.urlencoded({extended: false}))
 
-app.get('/feed', function(req, res) {
+app.get('/feed', function(req, res, next) {
   var options = {
     url: 'https://api.instagram.com/v1/users/self/feed/?access_token=' + req.session.access_token
   }
 
   request.get(options, function(error, response, body) {
-    // console.log(body)
-    var feed = JSON.parse(body)
+    if (error) {return next(error)}
+
+    try {
+      var feed = JSON.parse(body)
+    }
+    catch(err) {
+      return res.redirect('/')
+    }
+
+
+    if (feed.meta.code > 200) {
+      return next(feed.meta.error_message)
+    }
+
+    console.log(feed)
 
     res.render('feed', {
       feed: feed.data
     })
   })
 })
+
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err,
+    error: {}
+  });
+});
 
 app.listen(3000)

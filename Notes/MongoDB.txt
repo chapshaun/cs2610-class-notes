@@ -1,2 +1,19 @@
 npm install express
 npm install mongodb
+
+C:\Program Files\MongoDB\Server\3.0\bin
+mongo ds053944.mongolab.com:53944/testing -u dbuser -p password
+
+help
+showdbs
+db
+db.help()
+db.createCollection('users')
+show collections
+db.users.find()
+db.users.insert({id:4,username:'bbshark',fname:'enemy',lname:'chap'})
+db.users.find({id:2}).pretty()
+db.users.update({id:3},{$set:{}})
+db.users.remove({})
+update multiple records
+db.users.update({lname:'chap'}, {$set:{lname:'Chap'}}, {multi:true})

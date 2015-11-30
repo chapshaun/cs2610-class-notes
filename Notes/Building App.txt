@@ -5,6 +5,7 @@ sudo npm install express-handlebars
 sudo npm install request
 sudo npm install body-parser
 sudo npm install express-session
+sudo npm install mongodb
 sudo npm init
 
 sudo npm install <package> --save

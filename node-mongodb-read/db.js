@@ -11,7 +11,7 @@ exports.connect = function(url, callback) {
     if (err) return callback(err)
     state.db = db
     callback()
-  }
+  })
 }
 
 exports.get = function() {

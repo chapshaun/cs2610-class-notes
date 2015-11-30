@@ -4,6 +4,8 @@ var bodyParser = require('body-parser')
 var MongoClient = require('mongodb').MongoClient
 var assert = require('assert')
 
+var db = require('./db')
+
 var app = express()
 
 app.engine('handlebars', exphbs({defaultLayout: 'base'}));
@@ -16,25 +18,25 @@ app.get('/', function(req, res) {
 })
 
 app.post('/', function(req, res) {
-  // Connection URL
-  var url = 'mongodb://dbuser:password@ds055574.mongolab.com:55574/testing'
-  //Use connect method to connect to the Server
-  MongoClient.connect(url, function(err, db) {
-    assert.equal(null, err)
-    console.log('Connected correctly to server')
+  // // Connection URL
+  // var url = 'mongodb://dbuser:password@ds055574.mongolab.com:55574/testing'
+  // //Use connect method to connect to the Server
+  // MongoClient.connect(url, function(err, db) {
+  //   assert.equal(null, err)
+  //   console.log('Connected correctly to server')
 
-    var user = req.body
-    insertUser(db, user, function() {
-      db.close()
-      res.send('It worked!')
+  var user = req.body
+  insertUser(user, function() {
+      // db.close()
+  res.send('It worked!')
     })
-  })
+  // })
 })
 
 
-var insertUser = function(db, user, callback) {
+var insertUser = function(user, callback) {
   // Get the users collection
-  var collection = db.collection('users')
+  var collection = db.get().collection('users')
   // Insert a user
   collection.insert(user, function(err, result) {
     assert.equal(err, null)
@@ -45,4 +47,13 @@ var insertUser = function(db, user, callback) {
   })
 }
 
-app.listen(3000)
+db.connect('mongodb://dbuser:password@ds055574.mongolab.com:55574/testing', function(err) {
+  if (err) {
+    console.log('Unable to connect to Mongo.')
+    process.exit(1)
+  } else {
+    app.listen(3000, function() {
+      console.log('Listening on port 3000.....')
+    })
+  }
+})

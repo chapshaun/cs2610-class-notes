@@ -1,0 +1,21 @@
+<h1>Update User</h1>
+{{#if success}}
+<p style="color: green;">
+  {{success}}
+</p>
+{{/if}}
+<form class="user-form" action="" method="post">
+  <input type="hidden" name="_id" value="{{user._id}}">
+  <p>
+    <input type="text" name="username" value="{{user.username}}" placeholder="Username">
+  </p>
+  <p>
+    <input type="text" name="fname" value="{{user.fname}}" placeholder="First Name">
+  </p>
+  <p>
+    <input type="text" name="lname" value="{{user.lname}}" placeholder="Last Name">
+  </p>
+  <p>
+    <button type="submit">Submit</button>
+  </p>
+</form>
